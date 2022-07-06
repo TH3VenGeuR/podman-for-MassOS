@@ -42,9 +42,9 @@ envsubst < templates/manifest.tpl > /var/www/massos-repo/x86_64/manifest/$VARCON
 envsubst < templates/Dockerfile.tpl > Dockerfile
 podman build -t $VARPODMANNAME-$VARPODMANVER:$today .
 podman run -d $VARPODMANNAME-$VARPODMANVER:$today --name $VARPODMANNAME-$VARPODMANVER-$today
-podman copy $VARPODMANNAME-$VARPODMANVER-$today:/opt/podman/bin/rootlessport /tmp/$VARPODMANNAME-$today/usr/local/libexec/rootlessport
-podman copy $VARPODMANNAME-$VARPODMANVER-$today:/opt/conmon/bin/conmon /tmp/$VARCONMONNAME-$today/usr/local/libexec/conmon
-podman copy $VARPODMANNAME-$VARPODMANVER-$today:/opt/podman/bin/podman /tmp/$VARPODMANNAME-$today/usr/local/bin/podman
+podman cp $VARPODMANNAME-$VARPODMANVER-$today:/opt/podman/bin/rootlessport /tmp/$VARPODMANNAME-$today/usr/local/libexec/rootlessport
+podman cp $VARPODMANNAME-$VARPODMANVER-$today:/opt/conmon/bin/conmon /tmp/$VARCONMONNAME-$today/usr/local/libexec/conmon
+podman cp $VARPODMANNAME-$VARPODMANVER-$today:/opt/podman/bin/podman /tmp/$VARPODMANNAME-$today/usr/local/bin/podman
 
 cd /tmp/$VARCONMONNAME-$today/
 tar -cJf $VARCONMONNAME-$VARCONMONVER-$VARPKGARCH.tar.xz *
