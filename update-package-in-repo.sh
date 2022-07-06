@@ -1,8 +1,8 @@
 #!/bin/bash
 export today=$(date '+%Y%m%d')
 
-export VARPODMANVER=$(curl https://api.github.com/repos/containers/podman/releases/latest | grep tag_name) 
-export VARCONMONVER=$(curl https://api.github.com/repos/containers/conmon/releases/latest | grep tag_name) 
+export VARPODMANVER=$(curl https://api.github.com/repos/containers/podman/releases/latest | grep tag_name | awk '{print $2}' | tr -d '"' ) 
+export VARCONMONVER=$(curl https://api.github.com/repos/containers/conmon/releases/latest | grep tag_name | awk '{print $2}' | tr -d '"' ) 
 export VARPODMANDOWNLOAD="https://github.com/containers/podman.git"
 export VARCONMONDOWNLOAD="https://github.com/containers/conmon.git"
 export VARPODMANNAME=podman-rootless
