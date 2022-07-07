@@ -47,7 +47,7 @@ create_packages () {
   fi
 }
 
-create_packages("crun", "std", "https://github.com/containers/crun/","", "containers/crun","amd64","","Crun is a container runtime written C" );
-create_packages("slirp4netns", "std", "https://github.com/rootless-containers/slirp4netns/","", "rootless-containers/slirp4netns","x86_64","","Slirp4netns network layer for rootless container" );
-create_packages("podman-rootless", "git", "https://podman.io", "https://github.com/containers/podman.git","containers/podman","","slirp4netns crun","Podman is container engine, istalled rootless" );
-create_packages("conmon", "git", "https://github.com/containers/conmon", "https://github.com/containers/conmon.git","containers/conmon","","","Conmon is a monitoring program and communication tool between a container manager and an OCI runtime");
+create_packages "crun", "std", "https://github.com/containers/crun/","", "containers/crun","amd64","","Crun is a container runtime written C"
+create_packages "slirp4netns", "std", "https://github.com/rootless-containers/slirp4netns/","", "rootless-containers/slirp4netns","x86_64","","Slirp4netns network layer for rootless container" 
+create_packages "podman-rootless", "git", "https://podman.io", "https://github.com/containers/podman.git","containers/podman","","slirp4netns crun","Podman is container engine, istalled rootless" 
+create_packages "conmon", "git", "https://github.com/containers/conmon", "https://github.com/containers/conmon.git","containers/conmon","","","Conmon is a monitoring program and communication tool between a container manager and an OCI runtime"
