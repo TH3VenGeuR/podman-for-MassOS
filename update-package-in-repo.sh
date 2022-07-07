@@ -19,7 +19,7 @@ create_packages () {
   if [[ $method == "git" ]];then
     if [[ $VARPKGNAME == "podman-rootless" ]];then
       export WORKDIR="podman"
-      export VARBUILDTAGS='BUILDTAGS="apparmor seccomp systemd"'
+      export VARBUILDTAGS="BUILDTAGS=seccomp apparmor systemd"
     else
       export WORKDIR=$VARPKGNAME
       export VARBUILDTAGS=""
@@ -31,7 +31,7 @@ create_packages () {
     podman exec -it gobuilder apt install git make libseccomp-dev libsystemd-dev libbtrfs-dev libdevmapper-dev libgpgme-dev libglib2.0-dev -y
     podman exec -it gobuilder git clone $git_url
     podman exec --workdir /go/$WORKDIR -it gobuilder git checkout $VARPKGVER
-    podman exec --workdir /go/$WORKDIR -it gobuilder make $VARBUILDTAGS
+    podman exec --workdir /opt/$WORKDIR -it gobuilder /usr/bin/make "$VARBUILDTAGS"
     podman cp gobuilder:/go/$WORKDIR/bin/ usr/local/
     cd /tmp/$VARPKGNAME-$today/
     tar -cJf $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz *
