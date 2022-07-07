@@ -36,6 +36,7 @@ create_packages () {
     cd /tmp/$VARPKGNAME-$today/
     tar -cJf $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz *
     cp $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz /var/www/massos-repo/x86_64/archives/
+    podman rm -f gobuilder
     cd -
   elif [[ $method == "std" ]];then
     export VARDOWNLOAD=`curl https://api.github.com/repos/$api_option/releases/latest | grep browser_download_url | grep -m1 $filter | awk '{print $2}'| tr -d '"'`
