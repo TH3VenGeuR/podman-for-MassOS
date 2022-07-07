@@ -38,7 +38,7 @@ create_packages () {
     podman rm -f gobuilder
     cd -
   elif [[ $method == "std" ]];then
-    export VARDOWNLOAD=`curl https://api.github.com/repos/$api_option/releases/latest | grep browser_download_url | grep -m1 $filter | awk '{print $2}'| tr -d '"'`
+    export VARDOWNLOAD=`curl https://api.github.com/repos/$api_option/releases/latest | grep browser_download_url | grep -m1 $api_filter | awk '{print $2}'| tr -d '"'`
     curl $VARDOWNLOAD -o /tmp/$VARPKGNAME-$today/usr/local/$VARPKGNAME
     cd /tmp/$VARPKGNAME-$today/
     tar -cJf $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz *
