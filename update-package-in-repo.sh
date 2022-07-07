@@ -18,8 +18,46 @@ create_packages () {
     export VARDEPS="$7"
   fi
   export VARPKGDESCRIPTION="$8"
+  pre_install=$9
+  post_install=$10
+  pre_remove=$11
+  post_remove=$12
+  pre_upgrade=$13
+  post_upgrade=$14
+
   export VARPKGVER=`curl https://api.github.com/repos/$api_option/releases/latest | grep tag_name | awk '{print $2}' | tr -d '"'  | tr -d ','` 
   envsubst < templates/manifest.tpl > /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+
+  if [[ $pre_install != "none" ]];then
+    echo "pre_install () {" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    echo "$pre_install" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    echo "}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+  fi
+  if [[ post_install != "none" ]];then
+    echo "post_install () {" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    echo "$post_install" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    echo "}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+  fi
+  if [[ pre_remove != "none" ]];then
+    echo "pre_remove () {" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    echo "$pre_remove" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    echo "}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+  fi
+  if [[ post_remove != "none" ]];then
+    echo "post_remove () {" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    echo "$post_remove" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    echo "}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest  
+  fi
+  if [[ pre_upgrade != "none" ]];then
+    echo "pre_upgrade () {" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    echo "$pre_upgrade" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    echo "}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest  
+  fi
+  if [[ post_upgrade != "none" ]];then
+    echo "post_upgrade () {" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    echo "$post_upgrade" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    echo "}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+  fi
   mkdir -p /tmp/$VARPKGNAME-$today/usr/local
   if [[ $method == "git" ]];then
     if [[ $VARPKGNAME == "podman-rootless" ]];then
