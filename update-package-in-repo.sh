@@ -2,7 +2,7 @@
 set -x
 export today=$(date '+%Y%m%d')
 
-#create_packages (name, method, project_home, git_url, api_option, api_filter, depandancies, description) 
+#create_packages (name, method, project_home, git_url, api_option, api_filter, depandancies, description, pre_install, post_install, pre_remove, post_remove, pre_upgrade, post_upgrade) 
 create_packages () {
   export VARMAINTAINER="adrien@vgr.pw"
   export VARPKGARCH=x86_64
@@ -12,7 +12,11 @@ create_packages () {
   git_url="$4"
   api_option="$5"
   api_filter="$6"
-  export VARDEPS="$7"
+  if [[ $7 == "none" ]];then
+    export VARDEPS=" "
+  else;
+    export VARDEPS="$7"
+  fi
   export VARPKGDESCRIPTION="$8"
   export VARPKGVER=`curl https://api.github.com/repos/$api_option/releases/latest | grep tag_name | awk '{print $2}' | tr -d '"'  | tr -d ','` 
   envsubst < templates/manifest.tpl > /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
@@ -40,7 +44,8 @@ create_packages () {
     cd -
   elif [[ $method == "std" ]];then
     export VARDOWNLOAD=`curl https://api.github.com/repos/$api_option/releases/latest | grep browser_download_url | grep -m1 $api_filter | awk '{print $2}'| tr -d '"'`
-    curl $VARDOWNLOAD -o /tmp/$VARPKGNAME-$today/usr/local/$VARPKGNAME
+    mkdir /tmp/$VARPKGNAME-$today/usr/local/bin/
+    curl $VARDOWNLOAD -o /tmp/$VARPKGNAME-$today/usr/local/bin/$VARPKGNAME
     cd /tmp/$VARPKGNAME-$today/
     tar -cJf $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz *
     cp $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz /var/www/massos-repo/x86_64/archives/  
@@ -48,7 +53,8 @@ create_packages () {
   fi
 }
 
-create_packages "crun" "std" "https://github.com/containers/crun/" "" "containers/crun" "amd64" "" "Crun is a container runtime written C"
-create_packages "slirp4netns" "std" "https://github.com/rootless-containers/slirp4netns/" "" "rootless-containers/slirp4netns" "x86_64" "" "Slirp4netns network layer for rootless container" 
-create_packages "podman-rootless" "git" "https://podman.io" "https://github.com/containers/podman.git" "containers/podman" "" "slirp4netns crun" "Podman is container engine, istalled rootless" 
-create_packages "conmon" "git" "https://github.com/containers/conmon" "https://github.com/containers/conmon.git" "containers/conmon" "" "" "Conmon is a monitoring program and communication tool between a container manager and an OCI runtime"
+create_packages "crun" "std" "https://github.com/containers/crun/" "unused" "containers/crun" "amd64" "none" "Crun is a container runtime written C" "none" "none" "none" "none" "none" "none" 
+create_packages "slirp4netns" "std" "https://github.com/rootless-containers/slirp4netns/" "unused" "rootless-containers/slirp4netns" "x86_64" "none" "Slirp4netns network layer for rootless container" "none" "none" "none" "none" "none" "none" 
+create_packages "podman-rootless" "git" "https://podman.io" "https://github.com/containers/podman.git" "containers/podman" "unused" "slirp4netns crun" "Podman is container engine, installed rootless" "none" "echo \"user.max_user_namespaces=16384\" > /etc/sysctl.d/podman.conf \n echo \"$SUDO_USER:100000:65536\" > /etc/subgid \n echo \"$SUDO_USER:100000:65536\" > /etc/subuid \n echo '{"default": [{"type": "insecureAcceptAnything"}]}' > /etc/containers/policy.json \n echo \"runtime = crun\n[runtimes]\ncrun =  [\n    \"/usr/local/bin/crun\"\n]\"" "none" "none" "none" "none" 
+create_packages "conmon" "git" "https://github.com/containers/conmon" "https://github.com/containers/conmon.git" "containers/conmon" "unused" "none" "Conmon is a monitoring program and communication tool between a container manager and an OCI runtime" "none" "none" "none" "none" "none" "none" 
+

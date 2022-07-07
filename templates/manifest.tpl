@@ -1,7 +1,7 @@
 pkgname="$VARPKGNAME"
 pkgver="$VARPKGVER"
 description="$VARPKGDESCRIPTION"
-deps="$VARDPES"
+deps="$VARDEPS"
 arch="$VARPKGARCH"
 homepage="$VARHOMEPAGE"
 maintainer="$VARMAINTAINER"
