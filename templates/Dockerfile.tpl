@@ -1,4 +1,4 @@
-FROM golang:1.18.3-bullseye
+FROM golang:$GOVERSION-bullseye
 WORKDIR /opt
 RUN apt update && apt install git make libseccomp-dev libsystemd-dev libbtrfs-dev libdevmapper-dev libgpgme-dev libglib2.0-dev -y
 RUN git clone $VARPODMANDOWNLOAD
