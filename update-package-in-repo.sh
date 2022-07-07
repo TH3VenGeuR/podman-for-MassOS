@@ -17,7 +17,7 @@ create_packages () {
   envsubst < templates/manifest.tpl > /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
   mkdir -p /tmp/$VARPKGNAME-$today/usr/local
   if [[ $method == git ]];then
-    if [[ $VARPKGNAME == "podman-rootless"]];then
+    if [[ $VARPKGNAME == "podman-rootless" ]];then
       export WORKDIR="podman"
       export VARBUILDTAGS="BUILDTAGS='apparmor seccomp systemd'"
     else;
