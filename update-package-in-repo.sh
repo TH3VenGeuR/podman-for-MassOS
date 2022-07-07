@@ -23,6 +23,7 @@ create_packages () {
     else
       export WORKDIR=$VARPKGNAME
       export VARBUILDTAGS=""
+    fi
     export GOVERSION=$(curl -s https://go.dev/dl/?mode=json | jq -r '.[0].version' | tr -d 'go')
     cd /tmp/$VARPKGNAME-$today/
     podman run --name gobuilder -d golang:$GOVERSION-bullseye sleep 3600
