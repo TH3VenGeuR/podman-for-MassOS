@@ -71,7 +71,7 @@ create_packages () {
     cd /tmp/$VARPKGNAME-$today/
     podman run --name gobuilder -d golang:$GOVERSION-bullseye sleep 3600
     podman exec -it gobuilder apt update
-    podman exec -it gobuilder apt install git make libseccomp-dev libsystemd-dev libbtrfs-dev libdevmapper-dev libgpgme-dev libglib2.0-dev -y
+    podman exec -it gobuilder apt install git make libseccomp-dev libsystemd-dev libbtrfs-dev libdevmapper1.02.1 libdevmapper-dev libgpgme-dev libglib2.0-dev -y
     podman exec -it gobuilder git clone $git_url
     podman exec --workdir /go/$WORKDIR -it gobuilder git checkout $VARPKGVER
     podman exec --workdir /go/$WORKDIR -it gobuilder /usr/bin/make "$VARBUILDTAGS"
