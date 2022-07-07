@@ -6,24 +6,24 @@ export today=$(date '+%Y%m%d')
 create_packages () {
   export VARMAINTAINER="adrien@vgr.pw"
   export VARPKGARCH=x86_64
-  export VARPKGNAME="$1"
-  method="$2"
-  export VARPKGHOMEPAGE="$3"
-  git_url="$4"
-  api_option="$5"
-  api_filter="$6"
-  if [[ $7 == "none" ]];then
+  export VARPKGNAME="${1}"
+  method="${2}"
+  export VARPKGHOMEPAGE="${3}"
+  git_url="${4}"
+  api_option="${5}"
+  api_filter="${6}"
+  if [[ ${7} == "none" ]];then
     export VARDEPS=" "
   else
-    export VARDEPS="$7"
+    export VARDEPS="${7}"
   fi
-  export VARPKGDESCRIPTION="$8"
-  pre_install="$9"
-  post_install="$10"
-  pre_remove="$11"
-  post_remove="$12"
-  pre_upgrade="$13"
-  post_upgrade="$14"
+  export VARPKGDESCRIPTION="${8}"
+  pre_install="${9}"
+  post_install="${10}"
+  pre_remove="${11}"
+  post_remove="${12}"
+  pre_upgrade="${13}"
+  post_upgrade="${14}"
 
   export VARPKGVER=`curl https://api.github.com/repos/$api_option/releases/latest | grep tag_name | awk '{print $2}' | tr -d '"'  | tr -d ','` 
   envsubst < templates/manifest.tpl > /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
