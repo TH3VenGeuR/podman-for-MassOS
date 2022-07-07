@@ -1,14 +1,19 @@
 #!/bin/bash
 export today=$(date '+%Y%m%d')
 
-create_packages (name, method, project_home, git_url, api_option, api_filter, depandancies, description) {
+#create_packages (name, method, project_home, git_url, api_option, api_filter, depandancies, description) 
+create_packages () {
   export VARMAINTAINER="adrien@vgr.pw"
   export VARPKGARCH=x86_64
-  export VARPKGNAME="$name"
-  export VARPKGHOMEPAGE="$project_home"
-  export VARDEPS="$depandancies"
+  export VARPKGNAME="$1"
+  method="$2"
+  export VARPKGHOMEPAGE="$3"
+  git_url="$4"
+  api_option="$5"
+  api_filter="$6"
+  export VARDEPS="$7"
+  export VARPKGDESCRIPTION="$8"
   export VARPKGVER=`curl https://api.github.com/repos/$api_option/releases/latest | grep tag_name | awk '{print $2}' | tr -d '"'  | tr -d ','` 
-  export VARPKGDESCRIPTION="$description"
   envsubst < templates/manifest.tpl > /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
   mkdir -p /tmp/$VARPKGNAME-$today/usr/local
   if [[ $method == git ]];then
