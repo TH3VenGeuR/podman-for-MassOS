@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 export today=$(date '+%Y%m%d')
 
 #create_packages (name, method, project_home, git_url, api_option, api_filter, depandancies, description) 
