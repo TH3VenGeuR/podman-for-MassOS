@@ -19,7 +19,7 @@ create_packages () {
   if [[ $method == "git" ]];then
     if [[ $VARPKGNAME == "podman-rootless" ]];then
       export WORKDIR="podman"
-      export VARBUILDTAGS="BUILDTAGS='apparmor seccomp systemd'"
+      export VARBUILDTAGS='BUILDTAGS="apparmor seccomp systemd"'
     else
       export WORKDIR=$VARPKGNAME
       export VARBUILDTAGS=""
