@@ -14,7 +14,7 @@ create_packages () {
   api_filter="$6"
   if [[ $7 == "none" ]];then
     export VARDEPS=" "
-  else;
+  else
     export VARDEPS="$7"
   fi
   export VARPKGDESCRIPTION="$8"
