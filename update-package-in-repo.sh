@@ -20,7 +20,7 @@ create_packages () {
     if [[ $VARPKGNAME == "podman-rootless" ]];then
       export WORKDIR="podman"
       export VARBUILDTAGS="BUILDTAGS='apparmor seccomp systemd'"
-    else;
+    else
       export WORKDIR=$VARPKGNAME
       export VARBUILDTAGS=""
     export GOVERSION=$(curl -s https://go.dev/dl/?mode=json | jq -r '.[0].version' | tr -d 'go')
