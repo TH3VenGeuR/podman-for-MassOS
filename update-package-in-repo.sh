@@ -29,24 +29,24 @@ create_packages () {
   envsubst < templates/manifest.tpl > /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
 
   if [[ $pre_install != "none" ]];then
-    printf "pre_install() {" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    printf "pre_install() {\n" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
     printf "$pre_install" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
-    printf "}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    printf "\n}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
   fi
   if [[ $post_install != "none" ]];then
-    printf "post_install() {" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    printf "post_install() {\n" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
     printf "$post_install" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
-    printf "}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    printf "\n}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
   fi
   if [[ $pre_remove != "none" ]];then
-    printf "pre_remove() {" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    printf "pre_remove() {\n" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
     printf "$pre_remove" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
-    printf "}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    printf "\n}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
   fi
   if [[ $post_remove != "none" ]];then
-    printf "post_remove() {" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    printf "post_remove() {\n" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
     printf "$post_remove" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
-    printf "}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest  
+    printf "\n}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest  
   fi
   if [[ $pre_upgrade != "none" ]];then
     printf "pre_upgrade() {" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
@@ -54,9 +54,9 @@ create_packages () {
     printf "}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest  
   fi
   if [[ $post_upgrade != "none" ]];then
-    printf "post_upgrade() {" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    printf "post_upgrade() {\n" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
     printf "$post_upgrade" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
-    printf "}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
+    printf "\n}" >> /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
   fi
   mkdir -p /tmp/$VARPKGNAME-$today/usr/local
   if [[ $method == "git" ]];then
