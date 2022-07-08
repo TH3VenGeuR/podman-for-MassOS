@@ -74,7 +74,11 @@ create_packages () {
     podman exec -it gobuilder apt install git make libseccomp-dev libsystemd-dev libbtrfs-dev libdevmapper1.02.1 libdevmapper-dev libgpgme-dev libglib2.0-dev -y
     podman exec -it gobuilder git clone $git_url
     podman exec --workdir /go/$WORKDIR -it gobuilder git checkout $VARPKGVER
-    podman exec --workdir /go/$WORKDIR -it gobuilder /usr/bin/make "$VARBUILDTAGS"
+    if [[ -z $VARBUILDTAGS ]];then 
+      podman exec --workdir /go/$WORKDIR -it gobuilder /usr/bin/make "$VARBUILDTAGS"
+    else
+      podman exec --workdir /go/$WORKDIR -it gobuilder /usr/bin/make
+    fi
     podman cp gobuilder:/go/$WORKDIR/bin/ usr/local/
     tar -cJf $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz *
     cp $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz /var/www/massos-repo/x86_64/archives/
