@@ -83,7 +83,7 @@ create_packages () {
   elif [[ $method == "std" ]];then
     export VARDOWNLOAD=`curl https://api.github.com/repos/$api_option/releases/latest | grep browser_download_url | grep -m1 $api_filter | awk '{print $2}'| tr -d '"'`
     mkdir -p /tmp/$VARPKGNAME-$today/usr/local/bin/
-    curl $VARDOWNLOAD -o /tmp/$VARPKGNAME-$today/usr/local/bin/$VARPKGNAME
+    wget $VARDOWNLOAD -O /tmp/$VARPKGNAME-$today/usr/local/bin/$VARPKGNAME
     cd /tmp/$VARPKGNAME-$today/
     tar -cJf $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz *
     cp $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz /var/www/massos-repo/x86_64/archives/
@@ -95,6 +95,6 @@ create_packages () {
 #create_packages name method project_home git_url api_option api_filter depandancies description pre_install_cmd post_install_cmd pre_remove_cmd post_remove_cmd pre_upgrade_cmd post_upgrade_cmd
 create_packages "crun" "std" "https://github.com/containers/crun/" "unused" "containers/crun" "amd64" "none" "Crun is a container runtime written C" "none" "none" "none" "none" "none" "none" 
 create_packages "slirp4netns" "std" "https://github.com/rootless-containers/slirp4netns/" "unused" "rootless-containers/slirp4netns" "x86_64" "none" "Slirp4netns network layer for rootless container" "none" "none" "none" "none" "none" "none" 
-create_packages "podman-rootless" "git" "https://podman.io" "https://github.com/containers/podman.git" "containers/podman" "unused" "slirp4netns crun conmon" "Podman is container engine, installed rootless" "none" "  mkdir -p /etc/containers/ \n  echo \"user.max_user_namespaces=16384\" > /etc/sysctl.d/podman.conf \n  echo \"\$SUDO_USER:100000:65536\" > /etc/subgid \n  echo \"\$SUDO_USER:100000:65536\" > /etc/subuid \n  echo '{\"default\": [{\"type\": \"insecureAcceptAnything\"}]}' > /etc/containers/policy.json \n  echo \"runtime = crun\n[runtimes]\ncrun =  [\n    \"/usr/local/bin/crun\"\n]\" > /etc/containers/libpod.conf \n sysctl -p /etc/sysctl.d/podman.conf \n ln -s /usr/lib/libdevmapper.so.1.02 /usr/lib/libdevmapper.so.1.02.1 " "none" "none" "none" "none" 
+create_packages "podman-rootless" "git" "https://podman.io" "https://github.com/containers/podman.git" "containers/podman" "unused" "slirp4netns crun conmon" "Podman is container engine, installed rootless" "none" "  mkdir -p /etc/containers/ \n  echo \"user.max_user_namespaces=16384\" > /etc/sysctl.d/podman.conf \n  echo '{\"default\": [{\"type\": \"insecureAcceptAnything\"}]}' > /etc/containers/policy.json \n  cat > /etc/containers/libpod.conf << \"EOF\" \"runtime = crun\n[runtimes]\ncrun =  [\n    \"/usr/local/bin/crun\"\n]\" EOF \n sysctl -p /etc/sysctl.d/podman.conf \n ln -s /usr/lib/libdevmapper.so.1.02 /usr/lib/libdevmapper.so.1.02.1 \n UIDMIN=$\(grep ^UID_MIN /etc/login.defs | awk '{print $2}'\) \n UIDMAX=$\(grep ^UID_MAX /etc/login.defs | awk '{print $2}'\)\n for i in $\(awk -F : '$3 >= 1000 {print $1}' /etc/passwd; do echo \"$i:$UIDMIN:$UIDMAX\" >> /etc/subuid;echo \"$i:$UIDMIN:$UIDMAX\" >> /etc/subgid;done \n \n " "none" "none" "none" "none" 
 create_packages "conmon" "git" "https://github.com/containers/conmon" "https://github.com/containers/conmon.git" "containers/conmon" "unused" "none" "Conmon is a monitoring program and communication tool between a container manager and an OCI runtime" "none" "none" "none" "none" "none" "none" 
 
