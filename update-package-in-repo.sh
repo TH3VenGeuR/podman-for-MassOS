@@ -83,7 +83,7 @@ create_packages () {
   if [[ $method == "git" ]];then
     export GOVERSION=$(curl -s https://go.dev/dl/?mode=json | jq -r '.[0].version')
     cd /tmp/$VARPKGNAME-$today/
-    docker exec --name massbuilder -d massbuilder:$MASSOSLASTVER sleep 3600 
+    docker run --name massbuilder -d massbuilder:$MASSOSLASTVER sleep 3600 
     docker exec -it massbuilder wget https://go.dev/dl/$GOVERSION.linux-amd64.tar.gz
     docker exec -it massbuilder tar -C /usr/local -xzf go1.18.4.linux-amd64.tar.gz
     docker exec -it --workdir /opt massbuilder git clone $git_url
