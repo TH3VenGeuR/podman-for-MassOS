@@ -5,7 +5,7 @@ export MASSOSLASTVER=`curl https://api.github.com/repos/MassOS-Linux/MassOS/rele
 export MASSOSLASTVERURL=`curl https://api.github.com/repos/MassOS-Linux/MassOS/releases/latest | grep browser_download_url | grep -m1 .tar.xz | awk '{print $2}'| tr -d '"'`
 
 build_massos_container () {
-  massbuilderimage=`docker image ls | grep massbuilder | awk '{print $1:$2}'`  
+  massbuilderimage=`docker image ls | grep massbuilder | awk '{print $1":"$2}'`  
   if [[ $massbuilderimage == "" ]];then
     echo "no massos build found. Building..."
     docker import $MASSOSLASTVERURL massbuilder:$MASSOSLASTVER
