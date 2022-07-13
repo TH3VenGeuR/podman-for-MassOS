@@ -1,6 +1,22 @@
 #!/bin/bash
 set -x
 export today=$(date '+%Y%m%d')
+export MASSOSLASTVER=`curl https://api.github.com/repos/MassOS-Linux/MassOS/releases/latest | grep tag_name | awk '{print $2}' | tr -d '"'  | tr -d ','` 
+export MASSOSLASTVERURL=`curl https://api.github.com/repos/MassOS-Linux/MassOS/releases/latest | grep browser_download_url | grep -m1 .tar.xz | awk '{print $2}'| tr -d '"'`
+
+build_massos_container () {
+  massbuilderimage=`docker image ls | grep massbuilder | awk '{print $1:$2}'`  
+  if [[ $massbuilderimage == "" ]];then
+    echo "no massos build found. Building..."
+    docker import $MASSOSLASTVERURL massbuilder:$MASSOSLASTVER
+  elif [[ $massbuilderimage != "massbuilder:$MASSOSLASTVER" ]];then
+    echo "old massos build found. Removing it and building a new..."
+    docker rmi -f $massbuilderimage
+    docker import $MASSOSLASTVERURL massbuilder:$MASSOSLASTVER
+  elif [[ $massbuilderimage == "massbuilder:$MASSOSLASTVER" ]];then
+    echo "already last version of massos in use"
+  fi
+}
 
 #create_packages (name, method, project_home, git_url, api_option, api_filter, depandancies, description, pre_install, post_install, pre_remove, post_remove, pre_upgrade, post_upgrade) 
 create_packages () {
@@ -65,23 +81,23 @@ create_packages () {
   fi
   mkdir -p /tmp/$VARPKGNAME-$today/usr/local
   if [[ $method == "git" ]];then
-    export GOVERSION=$(curl -s https://go.dev/dl/?mode=json | jq -r '.[0].version' | tr -d 'go')
+    export GOVERSION=$(curl -s https://go.dev/dl/?mode=json | jq -r '.[0].version')
     cd /tmp/$VARPKGNAME-$today/
-    podman run --name gobuilder -d golang:$GOVERSION-bullseye sleep 3600
-    podman exec -it gobuilder apt update
-    podman exec -it gobuilder apt install git make libseccomp-dev libsystemd-dev libbtrfs-dev libdevmapper1.02.1 libdevmapper-dev libgpgme-dev libglib2.0-dev -y
-    podman exec -it gobuilder git clone $git_url
-    podman exec --workdir /go/$WORKDIR -it gobuilder git checkout $VARPKGVER
+    docker exec --name massbuilder -d massbuilder:$MASSOSLASTVER sleep 3600 
+    docker exec -it massbuilder wget https://go.dev/dl/$GOVERSION.linux-amd64.tar.gz
+    docker exec -it massbuilder tar -C /usr/local -xzf go1.18.4.linux-amd64.tar.gz
+    docker exec -it --workdir /opt massbuilder git clone $git_url
+    docker exec --workdir /opt/$WORKDIR -it massbuilder git checkout $VARPKGVER
     if [[ $VARBUILDTAGS != "none" ]];then 
-      podman exec --workdir /go/$WORKDIR -it gobuilder /usr/bin/make "$VARBUILDTAGS"
+      docker exec -e "PATH=$PATH:/usr/local/go/bin" --workdir /opt/$WORKDIR -it massbuilder /usr/bin/make "$VARBUILDTAGS"
     else
-      podman exec --workdir /go/$WORKDIR -it gobuilder /usr/bin/make
+      docker exec --workdir /opt/$WORKDIR -it massbuilder /usr/bin/make
     fi
-    podman cp gobuilder:/go/$WORKDIR/bin/ usr/local/
+    docker cp massbuilder:/go/$WORKDIR/bin/ usr/local/
     chmod -R +x /tmp/$VARPKGNAME-$today/usr/local/
     tar -cJf $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz *
     cp $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz /var/www/massos-repo/x86_64/archives/
-    podman rm -f gobuilder
+    docker rm -f massbuilder
     cd -
   elif [[ $method == "std" ]];then
     export VARDOWNLOAD=`curl https://api.github.com/repos/$api_option/releases/latest | grep browser_download_url | grep -m1 $api_filter | awk '{print $2}'| tr -d '"'`
@@ -96,6 +112,7 @@ create_packages () {
   rm -r /tmp/$VARPKGNAME-$today/
 }
 
+build_massos_container
 #create_packages name method project_home git_url api_option api_filter depandancies description pre_install_cmd post_install_cmd pre_remove_cmd post_remove_cmd pre_upgrade_cmd post_upgrade_cmd buildargs
 create_packages "crun" "std" "https://github.com/containers/crun/" "unused" "containers/crun" "amd64" "none" "Crun is a container runtime written C" "none" "none" "none" "none" "none" "none" "none"
 create_packages "slirp4netns" "std" "https://github.com/rootless-containers/slirp4netns/" "unused" "rootless-containers/slirp4netns" "x86_64" "none" "Slirp4netns network layer for rootless container" "none" "none" "none" "none" "none" "none" "none"
