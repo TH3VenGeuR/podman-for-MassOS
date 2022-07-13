@@ -93,7 +93,7 @@ create_packages () {
     else
       docker exec --workdir /opt/$WORKDIR massbuilder /usr/bin/make
     fi
-    docker cp massbuilder:/go/$WORKDIR/bin/ usr/local/
+    docker cp massbuilder:/opt/$WORKDIR/bin/ usr/local/
     chmod -R +x /tmp/$VARPKGNAME-$today/usr/local/
     tar -cJf $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz *
     cp $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz /var/www/massos-repo/x86_64/archives/
