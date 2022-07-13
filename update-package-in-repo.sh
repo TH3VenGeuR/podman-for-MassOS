@@ -84,14 +84,14 @@ create_packages () {
     export GOVERSION=$(curl -s https://go.dev/dl/?mode=json | jq -r '.[0].version')
     cd /tmp/$VARPKGNAME-$today/
     docker run --name massbuilder -d massbuilder:$MASSOSLASTVER sleep 3600 
-    docker exec -it massbuilder wget https://go.dev/dl/$GOVERSION.linux-amd64.tar.gz
-    docker exec -it massbuilder tar -C /usr/local -xzf go1.18.4.linux-amd64.tar.gz
-    docker exec -it --workdir /opt massbuilder git clone $git_url
-    docker exec --workdir /opt/$WORKDIR -it massbuilder git checkout $VARPKGVER
+    docker exec massbuilder wget https://go.dev/dl/$GOVERSION.linux-amd64.tar.gz
+    docker exec massbuilder tar -C /usr/local -xzf go1.18.4.linux-amd64.tar.gz
+    docker exec --workdir /opt massbuilder git clone $git_url
+    docker exec --workdir /opt/$WORKDIR massbuilder git checkout $VARPKGVER
     if [[ $VARBUILDTAGS != "none" ]];then 
-      docker exec -e "PATH=$PATH:/usr/local/go/bin" --workdir /opt/$WORKDIR -it massbuilder /usr/bin/make "$VARBUILDTAGS"
+      docker exec -e "PATH=$PATH:/usr/local/go/bin" --workdir /opt/$WORKDIR massbuilder /usr/bin/make "$VARBUILDTAGS"
     else
-      docker exec --workdir /opt/$WORKDIR -it massbuilder /usr/bin/make
+      docker exec --workdir /opt/$WORKDIR massbuilder /usr/bin/make
     fi
     docker cp massbuilder:/go/$WORKDIR/bin/ usr/local/
     chmod -R +x /tmp/$VARPKGNAME-$today/usr/local/
