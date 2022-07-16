@@ -41,7 +41,8 @@ create_packages () {
   pre_upgrade="${13}"
   post_upgrade="${14}"
   export VARBUILDTAGS="${15}"
-  export VARPKGVER=`curl https://api.github.com/repos/$api_option/releases/latest | grep tag_name | awk '{print $2}' | tr -d '"'  | tr -d ',' | sed 's/^v//'` 
+  export VARPKGVERORI=`curl https://api.github.com/repos/$api_option/releases/latest | grep tag_name | awk '{print $2}' | tr -d '"'  | tr -d ','` 
+  export VARPKGVER=`echo $VARPKGVERORI | sed 's/^v//'`
   envsubst < templates/manifest.tpl > /var/www/massos-repo/x86_64/manifest/$VARPKGNAME.manifest
 
   if [[ $pre_install != "none" ]];then
@@ -87,7 +88,7 @@ create_packages () {
     docker exec massbuilder wget https://go.dev/dl/$GOVERSION.linux-amd64.tar.gz
     docker exec massbuilder tar -C /usr/local -xzf go1.18.4.linux-amd64.tar.gz
     docker exec --workdir /opt massbuilder git clone $git_url
-    docker exec --workdir /opt/$WORKDIR massbuilder git checkout $VARPKGVER
+    docker exec --workdir /opt/$WORKDIR massbuilder git checkout $VARPKGVERORI
     if [[ $VARBUILDTAGS != "none" ]];then 
       docker exec -e "PATH=$PATH:/usr/local/go/bin" --workdir /opt/$WORKDIR massbuilder /usr/bin/make "$VARBUILDTAGS"
     else
@@ -95,6 +96,9 @@ create_packages () {
     fi
     docker cp massbuilder:/opt/$WORKDIR/bin/ usr/local/
     chmod -R +x /tmp/$VARPKGNAME-$today/usr/local/
+    find /tmp/$VARPKGNAME-$today/usr/local/ -type f -exec strip --strip-all {} ';' &>/dev/null || true
+    find /tmp/$VARPKGNAME-$today/usr/local/ -type f -name \*.a -or -name \*.o -exec strip --strip-debug {} ';' &>/dev/null || true
+    find /tmp/$VARPKGNAME-$today/usr/local/ -type f -name \*.so\* -exec strip --strip-unneeded {} ';' &>/dev/null || true
     tar -cJf $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz *
     cp $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz /var/www/massos-repo/x86_64/archives/
     docker rm -f massbuilder
@@ -105,6 +109,9 @@ create_packages () {
     wget $VARDOWNLOAD -O /tmp/$VARPKGNAME-$today/usr/local/bin/$VARPKGNAME
     chmod -R +x /tmp/$VARPKGNAME-$today/usr/local/
     cd /tmp/$VARPKGNAME-$today/
+    find /tmp/$VARPKGNAME-$today/usr/local/ -type f -exec strip --strip-all {} ';' &>/dev/null || true
+    find /tmp/$VARPKGNAME-$today/usr/local/ -type f -name \*.a -or -name \*.o -exec strip --strip-debug {} ';' &>/dev/null || true
+    find /tmp/$VARPKGNAME-$today/usr/local/ -type f -name \*.so\* -exec strip --strip-unneeded {} ';' &>/dev/null || true    
     tar -cJf $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz *
     cp $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz /var/www/massos-repo/x86_64/archives/
     cd -
