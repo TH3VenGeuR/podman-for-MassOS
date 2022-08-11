@@ -86,7 +86,7 @@ create_packages () {
     cd /tmp/$VARPKGNAME-$today/
     docker run --name massbuilder -d massbuilder:$MASSOSLASTVER sleep 3600 
     docker exec massbuilder wget https://go.dev/dl/$GOVERSION.linux-amd64.tar.gz
-    docker exec massbuilder tar -C /usr/local -xzf go1.18.4.linux-amd64.tar.gz
+    docker exec massbuilder tar -C /usr/local -xzf $GOVERSION.linux-amd64.tar.gz
     docker exec --workdir /opt massbuilder git clone $git_url
     docker exec --workdir /opt/$WORKDIR massbuilder git checkout $VARPKGVERORI
     if [[ $VARBUILDTAGS != "none" ]];then 
