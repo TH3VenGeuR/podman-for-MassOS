@@ -81,6 +81,7 @@ create_packages () {
     export WORKDIR=$VARPKGNAME
   fi
   mkdir -p /tmp/$VARPKGNAME-$today/usr/local
+  mkdir -p /tmp/$VARPKGNAME-$today/usr/share/licenses/$WORKDIR/
   if [[ $method == "git" ]];then
     export GOVERSION=$(curl -s https://go.dev/dl/?mode=json | jq -r '.[0].version')
     cd /tmp/$VARPKGNAME-$today/
@@ -99,6 +100,9 @@ create_packages () {
     find /tmp/$VARPKGNAME-$today/usr/local/ -type f -exec strip --strip-all {} ';' &>/dev/null || true
     find /tmp/$VARPKGNAME-$today/usr/local/ -type f -name \*.a -or -name \*.o -exec strip --strip-debug {} ';' &>/dev/null || true
     find /tmp/$VARPKGNAME-$today/usr/local/ -type f -name \*.so\* -exec strip --strip-unneeded {} ';' &>/dev/null || true
+    for lic in COPYRIGHT COPYING LICENSE CODE-OF-CONDUCT.md 
+      do docker cp massbuilder:/opt/$WORKDIR/$lic /tmp/$VARPKGNAME-$today/usr/share/licenses/$WORKDIR/$lic
+    done
     tar -cJf $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz *
     cp $VARPKGNAME-$VARPKGVER-$VARPKGARCH.tar.xz /var/www/massos-repo/x86_64/archives/
     docker rm -f massbuilder
@@ -106,7 +110,14 @@ create_packages () {
   elif [[ $method == "std" ]];then
     export VARDOWNLOAD=`curl https://api.github.com/repos/$api_option/releases/latest | grep browser_download_url | grep -m1 $api_filter | awk '{print $2}'| tr -d '"'`
     mkdir -p /tmp/$VARPKGNAME-$today/usr/local/bin/
+    mkdir -p /tmp/$VARPKGNAME-$today/usr/share/licenses/$WORKDIR/
     wget $VARDOWNLOAD -O /tmp/$VARPKGNAME-$today/usr/local/bin/$VARPKGNAME
+    for lic in COPYRIGHT COPYING LICENSE CODE-OF-CONDUCT.md 
+      do 
+	 if [[ `curl -I https://raw.githubusercontent.com/$api_option/master/$lic | head -n 1|cut -d$' ' -f2` != 404 ]];then
+	   wget https://raw.githubusercontent.com/$api_option/master/$lic -O /tmp/$VARPKGNAME-$today/usr/share/licenses/$WORKDIR/$lic
+	 fi 
+    done
     chmod -R +x /tmp/$VARPKGNAME-$today/usr/local/
     cd /tmp/$VARPKGNAME-$today/
     find /tmp/$VARPKGNAME-$today/usr/local/ -type f -exec strip --strip-all {} ';' &>/dev/null || true
